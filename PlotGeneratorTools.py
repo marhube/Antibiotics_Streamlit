@@ -1,5 +1,3 @@
-print('Er inne i PlotGenerator.py')
-#
 import pandas as pd
 import numpy as np
 import os
@@ -7,6 +5,7 @@ import time
 import sys# For sys.exit()
 import datetime as dt
 import math
+from plotnine import *
 #
 # ********** Start importing modules for graphics
 import matplotlib
@@ -150,7 +149,7 @@ class PlotGenerator:
             )
         #
         monthlyDDD['groupFactor'] = self.createGroupFactor(monthlyDDD)
-        # ********* Fortsette her med å lage faktorer!!!!!!
+        # ********* 
         return monthlyDDD 
     #
     def createPlotData(self):

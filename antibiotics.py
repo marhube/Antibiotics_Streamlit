@@ -15,10 +15,28 @@ from plotnine import *
 #********* End importing modules for graphics
 #
 #********** Start importing auxiliary code
-exec(open("DDDmisc.py", encoding='utf-8').read())
+import DDDmisc
+import SQL_Tools
+import ReadData
+from TotalTools import Total
+from ATC_Tools import ATC3
+from  IndicationGroupTools import IndicationGroup
+from NarrowBroadTools import NarrowBroad
 # *********** End importing auxiliary code
 #********* Start reading data and FHI-logo
-exec(open("ReadData.py", encoding='utf-8').read())
+monthly_data = SQL_Tools.get_table_from_db(annual=False)
+annual_data = SQL_Tools.get_table_from_db(annual = True)
+#
+monthNames = ReadData.get_month_names()
+# End create locale month names
+
+Groupings = list(monthly_data.columns)[-4:]
+CountVariable = [col for col in list(annual_data.columns) if re.search("^DDD.*1000",col) is not None][0]
+#******* End fetch data
+#Memo to self: Useful info from https://discuss.streamlit.io/t/change-font-size-and-font-color/12377/3
+#******** Start fetch FHI logo
+image = ReadData.get_image()
+#*********  End fetch FHI logo
 #********* End reading data and FHI-logo
 #
 image_title = '<p style="font-family:sans-serif; color:Black; font-size: 42px;">Bruk av antibiotika i Norge</p>'
@@ -26,7 +44,7 @@ st.markdown(image_title, unsafe_allow_html=True)
 st.image(image, channels="BGR")
 # Using "with" notation
 #
-allMonthlyPeriods = getDistinctPeriods(monthly_data)
+allMonthlyPeriods = DDDmisc.getDistinctPeriods(monthly_data)
 nonUniqueYears = [int(year) for year in  np.floor(np.array(allMonthlyPeriods)/100)]
 # Create an empty container to store input from user (later forwarded to graph render)
 #Initialize position with the default value 'stack'
@@ -44,7 +62,7 @@ with st.sidebar:
     #
     startYearOptions = None
     if dataResolution == "årlig":
-        startYearOptions = getDistinctPeriods(annual_data)
+        startYearOptions = DDDmisc.getDistinctPeriods(annual_data)
         graphInputDict['annual'] = True
         graphInputDict['allData'] = annual_data
     else:# Memo to self: Need to extract unique ("year parts")
@@ -98,7 +116,7 @@ with st.sidebar:
             graphInputDict['position'] = 'dodge'
         #
     # 
-    allVariableLevels = getAllLevels(graphInputDict['allData'],Grouping = graphInputDict['Grouping'])
+    allVariableLevels = DDDmisc.getAllLevels(graphInputDict['allData'],Grouping = graphInputDict['Grouping'])
     if graphInputDict['Grouping'] == Groupings[0]:
         graphInputDict['variables'] = allVariableLevels                
     else:
@@ -117,7 +135,7 @@ with st.sidebar:
 st.cache_resource(ttl = 1000)
 def calcPlotInfo(graphInputDict):
     # Create graph input dictionary
-    plotObj = eval(classMapper(graphInputDict['Grouping']))(graphInputDict)
+    plotObj = eval(DDDmisc.classMapper(graphInputDict['Grouping']))(graphInputDict)
     return plotObj.gg2
 #
 st.cache_data(ttl = 1000)

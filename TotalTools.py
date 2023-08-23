@@ -1,5 +1,3 @@
-print('Er inne i TotalTools.py')
-#
 import pandas as pd
 import numpy as np
 import os
@@ -11,7 +9,7 @@ from plotnine import *
 from statistics import median
 #
 #********** Start read auxiliary code
-exec(open("PlotGenerator.py", encoding='utf-8').read())
+from  PlotGeneratorTools import PlotGenerator
 # *********** End read auxiliary code
 #Memo to self: A class that inherits another class doesn't need to have an init-function
 class Total(PlotGenerator):
@@ -20,11 +18,11 @@ class Total(PlotGenerator):
         return main_title
     
     def createAnnualPlot(self):
-        annual_plot =  (ggplot(self.plotData, aes(x="yearFactor",y = CountVariable, fill = CountVariable)) 
+        annual_plot =  (ggplot(self.plotData, aes(x="yearFactor",y = self.CountVar, fill = self.CountVar)) 
             + geom_bar(stat="identity",position = self.position,color = "black")
             + scale_fill_gradient2(
                 low = "green",mid = "yellow",high = "red",
-                midpoint = median(self.plotData[CountVariable])
+                midpoint = median(self.plotData[self.CountVar])
                 )      
             + ggtitle(self.title) 
             + labs(x= "",y = self.ylab)          
@@ -39,14 +37,11 @@ class Total(PlotGenerator):
         )
         #
         return annual_plot
-    #
+    #Memo : 
     def createMonthlyPlot(self):
-        print("self.plotData['firstMonthDay'] er ")
-        print(self.plotData['firstMonthDay'])
         startTime = self.plotData['firstMonthDay'].min()
         endTime = self.plotData['firstMonthDay'].max()
-        print(f'Inne i createMonthlyPlot så er startTime {startTime} og endTime er {endTime}')
-        month_plot =  (ggplot(self.plotData, aes(x="firstMonthDay",y = CountVariable)) 
+        month_plot =  (ggplot(self.plotData, aes(x="firstMonthDay",y=self.CountVar)) 
             + scale_x_datetime(date_labels = "%b-%Y",breaks = pd.date_range(startTime,endTime, freq='6M')
                 )
             + ggtitle(self.title) 

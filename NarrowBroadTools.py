@@ -1,5 +1,3 @@
-print('Er inne i NarrowBroadTools.py')
-#
 import pandas as pd
 import numpy as np
 import os
@@ -9,7 +7,7 @@ import sys# For sys.exit()
 from plotnine import *
 #********* End  graphics-related imports
 #********** Start read auxiliary code
-exec(open("PlotGenerator.py", encoding='utf-8').read())
+from  PlotGeneratorTools import PlotGenerator
 # *********** End read auxiliary code
 class NarrowBroad(PlotGenerator):
     def getTitle(self):

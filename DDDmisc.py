@@ -1,5 +1,3 @@
-print('Er inne i DDDmisc.py')
-#
 import pandas as pd
 import numpy as np
 import os
@@ -11,15 +9,10 @@ import re # For regex
 from functools import partial
 #
 #********** Start laster inn hjelpekode
-exec(open("TotalTools.py", encoding='utf-8').read())
-exec(open("ATC_Tools.py", encoding='utf-8').read())
-exec(open("IndicationGroupTools.py", encoding='utf-8').read())
-exec(open("NarrowBroadTools.py", encoding='utf-8').read())
 # *********** Endfirst read sql code
 #Note: By default sort in descending order
 #More info at https://stackoverflow.com/questions/3940128/how-do-i-reverse-a-list-or-loop-over-it-backwards
 def getDistinctPeriods(df,desc = True):
-    print(f'Er nå inne i getDistinctPeriods')
     periods = sorted(list(set(df.iloc[:, 0].tolist())),reverse = desc)
     #
     return periods

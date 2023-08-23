@@ -1,5 +1,3 @@
-print('Er inne i SQL_Tools.py')
-#
 import sys # For sys.exit()
 import os
 import re
