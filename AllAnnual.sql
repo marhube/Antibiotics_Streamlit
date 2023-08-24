@@ -1,6 +1,6 @@
 SET NOCOUNT ON;
---Av en eller annen grunn så ser ikke R (RODBC) ut til å like "USE" statement 
--- og må ha "SET NOCOUNT ON" for å take scripting med hjelpetabeller
+--Av en eller annen grunn sÃ¥ ser ikke R (RODBC) ut til Ã¥ like "USE" statement 
+-- og mÃ¥ ha "SET NOCOUNT ON" for Ã¥ take scripting med hjelpetabeller
 --
 DROP TABLE IF EXISTS 
 #distinkte_relevante_ATC_koder,#grupperte_ATC_koder,#basisuttrekk,
@@ -13,7 +13,7 @@ SELECT DISTINCT atc.ATCNr
 INTO #distinkte_relevante_ATC_koder
 FROM Grossist_DWH.dbo.DimVareATC atc
 WHERE atc.ATCNr LIKE 'J01%' AND atc.ATCNr  <> 'J01XX05' -- Vil ikke ha med metenamin
-AND LEN(atc.ATCNr) = 7 -- Får ellers med to rader med kode 'J01'
+AND LEN(atc.ATCNr) = 7 -- FÃ¥r ellers med to rader med kode 'J01'
 ;
 -- DROP TABLE IF EXISTS distinkte_relevante_ATC_koder
 -- SELECT TOP 20 * FROM #distinkte_relevante_ATC_koder
@@ -62,8 +62,8 @@ FROM #distinkte_relevante_ATC_koder atc
 ;
 -- DROP TABLE IF EXISTS #grupperte_ATC_koder
 -- SELECT TOP 200 * FROM #grupperte_ATC_koder
--- Memo til selv: Trenger å trekke ut også månedsdelen for å trekke ut
--- årende der vi har hele kalenderår med data
+-- Memo til selv: Trenger Ã¥ trekke ut ogsÃ¥ mÃ¥nedsdelen for Ã¥ trekke ut
+-- Ã¥rende der vi har hele kalenderÃ¥r med data
 SELECT  fgg.PeriodeId,
 CAST(SUBSTRING(CAST(fgg.PeriodeId AS VARCHAR(6)),1,4) AS INT) AS aar,
 CAST(SUBSTRING(CAST(PeriodeID AS VARCHAR(6)),5,2) AS INT) AS mnd,
@@ -81,11 +81,11 @@ WHERE atc.VareGruppe IN ('1','2','6')
 -- DROP TABLE IF EXISTS #basisuttrekk
 -- SELECT COUNT(*) FROM #basisuttrekk
 -- SELECT TOP 20 * FROM #basisuttrekk
--- Gjør så tellinger kun på PeriodeId og ATCNR
+-- GjÃ¸r sÃ¥ tellinger kun pÃ¥ PeriodeId og ATCNR
 -- Memo til selv: Ingen av grupperingene splitter ATCnr
 
 
--- Start: Fjerne år der vi bare har data for deler av året
+-- Start: Fjerne Ã¥r der vi bare har data for deler av Ã¥ret
 -- Trekker ut 
 SELECT aar,MIN(mnd) AS forste_mnd_med_data, MAX(mnd) AS siste_mnd_med_data
 INTO #forste_siste_mnd_pr_aar
@@ -107,14 +107,14 @@ FROM #basisuttrekk bu
 INNER JOIN #aar_data_hele_aaret adha
 ON bu.aar = adha.aar
 ;
--- Slutt : Sitter nå igjen kun med år der vi har data for hele året
+-- Slutt : Sitter nÃ¥ igjen kun med Ã¥r der vi har data for hele Ã¥ret
 -- 
 -- DROP TABLE IF EXISTS #basisuttrekk_brutto_mnd_DDD
 -- SELECT COUNT(*) AS ant_rader FROM #basisuttrekk_brutto_mnd_DDD
 -- SELECT TOP 2
 -- SELECT DISTINCT PeriodeId FROM #basisuttrekk_brutto_mnd_DDD ORDER BY PeriodeId
--- Memo til selv: Må koble på antall dager i hvert år.
--- Må i "where" sette en betingelse på måned (velge ut én) for å unngå duplikater
+-- Memo til selv: MÃ¥ koble pÃ¥ antall dager i hvert Ã¥r.
+-- MÃ¥ i "where" sette en betingelse pÃ¥ mÃ¥ned (velge ut Ã©n) for Ã¥ unngÃ¥ duplikater
 ;
 SELECT aar,ATCNr,SUM(tot_DDD) AS brutto_aarlig_DDD
 INTO #basisuttrekk_brutto_aar_DDD
@@ -122,7 +122,7 @@ FROM #basisuttrekk_hele_aar
 GROUP BY aar,ATCNr
 ;
 -- DROP TABLE IF EXISTS #basisuttrekk_brutto_aar_DDD
--- Deler så på antall dager i hver måned
+-- Deler sÃ¥ pÃ¥ antall dager i hver mÃ¥ned
 SELECT aar_ddd.*,dp.AntallDagIAar,
 brutto_aarlig_DDD/CAST(dp.AntallDagIAar AS float) AS brutto_daglig_DDD
 INTO #basisuttrekk_dag_DDD
@@ -132,8 +132,8 @@ aar_ddd.aar = dp.Aar
 WHERE dp.Maaned = 0 
 ;
 -- DROP TABLE IF EXISTS #basisuttrekk_dag_DDD
---  Memo til selv: Trenger så folketall fra januar samme år som "start_month"
--- For å få til det så må jeg trekke ut år fra "start_month
+--  Memo til selv: Trenger sÃ¥ folketall fra januar samme Ã¥r som "start_month"
+-- For Ã¥ fÃ¥ til det sÃ¥ mÃ¥ jeg trekke ut Ã¥r fra "start_month
 -- Trenger ikke PeriodeId, bare Aar
 
 SELECT dp.Aar,fb.FylkeNr,
@@ -161,7 +161,7 @@ ON dag_ddd.Aar = hnf.Aar
 ;
 -- DROP TABLE IF EXISTS #basisuttrekk_dag_DDD dag_ddd
 --  SELECT TOP 20 * FROM #tot_dd_pr_dag_ant_innb
--- Skal så koble på alle grupperingsmulighetene
+-- Skal sÃ¥ koble pÃ¥ alle grupperingsmulighetene
 -- 
 SELECT skalert_ddd.*, gak.Total,gak.ATC3,gak.indikasjonsgruppe,gak.bred_vs_smal
 INTO #basisuttrekk_inndelingsgrupper
@@ -178,10 +178,4 @@ SET NOCOUNT OFF;
 SELECT * 
 FROM #basisuttrekk_inndelingsgrupper
 ORDER BY aar,ATCNr
-;
---
-SELECT aar,SUM(big.DDD_1000innb_dogn) AS DDD_1000innb_dogn
-FROM #basisuttrekk_inndelingsgrupper big
-GROUP BY aar
-ORDER BY aar
 ;
